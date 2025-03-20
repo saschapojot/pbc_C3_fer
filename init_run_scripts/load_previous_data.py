@@ -8,9 +8,9 @@ import numpy as np
 import subprocess
 from pathlib import Path
 import pickle
-import random
-#this script loads previous data
 
+#this script loads previous data
+np.random.seed(29)
 numArgErr=4
 valErr=5
 if (len(sys.argv)!=3):
@@ -77,7 +77,7 @@ def create_init_Px_Py_Qx_Qy(U_dipole_dataDir):
     outPath_Px=U_dipole_dataDir+"/Px/"
     Path(outPath_Px).mkdir(exist_ok=True,parents=True)
     outFileName_Px=outPath_Px+"/Px_init.pkl"
-    Px_init_mat=q*np.array([random.uniform(d_min,d_max) for i in range(0,N*N)])
+    Px_init_mat=q*np.array([np.random.uniform(d_min,d_max) for i in range(0,N*N)])
     with open(outFileName_Px,"wb") as fptr:
         pickle.dump(Px_init_mat,fptr)
 
@@ -85,7 +85,7 @@ def create_init_Px_Py_Qx_Qy(U_dipole_dataDir):
     outPath_Py=U_dipole_dataDir+"/Py/"
     Path(outPath_Py).mkdir(exist_ok=True,parents=True)
     outFileName_Py=outPath_Py+"/Py_init.pkl"
-    Py_init_mat=q*np.array([random.uniform(d_min,d_max) for i in range(0,N*N)])
+    Py_init_mat=q*np.array([np.random.uniform(d_min,d_max) for i in range(0,N*N)])
     with open(outFileName_Py,"wb") as fptr:
         pickle.dump(Py_init_mat,fptr)
 
@@ -93,7 +93,7 @@ def create_init_Px_Py_Qx_Qy(U_dipole_dataDir):
     outPath_Qx=U_dipole_dataDir+"/Qx/"
     Path(outPath_Qx).mkdir(exist_ok=True,parents=True)
     outFileName_Qx=outPath_Qx+"/Qx_init.pkl"
-    Qx_init_mat=q*np.array([random.uniform(d_min,d_max) for i in range(0,N*N)])
+    Qx_init_mat=q*np.array([np.random.uniform(d_min,d_max) for i in range(0,N*N)])
     with open(outFileName_Qx,"wb") as fptr:
         pickle.dump(Qx_init_mat,fptr)
 
@@ -102,7 +102,7 @@ def create_init_Px_Py_Qx_Qy(U_dipole_dataDir):
     outPath_Qy=U_dipole_dataDir+"/Qy/"
     Path(outPath_Qy).mkdir(exist_ok=True,parents=True)
     outFileName_Qy=outPath_Qy+"/Qy_init.pkl"
-    Qy_init_mat=q*np.array([random.uniform(d_min,d_max) for i in range(0,N*N)])
+    Qy_init_mat=q*np.array([np.random.uniform(d_min,d_max) for i in range(0,N*N)])
     with open(outFileName_Qy,"wb") as fptr:
         pickle.dump(Qy_init_mat,fptr)
 

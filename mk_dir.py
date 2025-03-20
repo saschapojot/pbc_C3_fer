@@ -81,7 +81,7 @@ alpha6_Str=format_using_decimal(alpha6)
 alpha7_Str=format_using_decimal(alpha7)
 
 J_Str=format_using_decimal(J)
-
+h=0.04
 TDirsAll=[]
 TStrAll=[]
 
@@ -150,7 +150,7 @@ def contents_to_conf(k):
         "\n",
         f"default_flush_num={default_flush_num}\n",
         "\n",
-        "h=0.02\n",
+        f"h={h}\n",
         "\n",
         "#the configurations of the system are saved to file if the sweep number is a multiple of sweep_multiple\n",
         "\n",

@@ -2,7 +2,7 @@ In the very beginning, initialize directories:
 python mk_dir.py, to set coefficients, T, and directories
 ##########################################
 #this project uses PBC
-# in this project, random seeds are set in 1 place1, in ./init_run_scripts/load_previous_data.py
+# in this project, random seeds are set in 1 place, in ./init_run_scripts/load_previous_data.py
 
 #
 ##########################################

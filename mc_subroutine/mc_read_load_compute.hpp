@@ -342,14 +342,148 @@ public:
         {
             fs::create_directories(out_Qy_path);
         }
+        this->A_T=arma::sp_dmat(N0*N1,N0*N1);
+
+        this->B_T=arma::sp_dmat(N0*N1,N0*N1);
+
+        this->C_T=arma::sp_dmat(N0*N1,N0*N1);
+
+        this->G_T=arma::sp_dmat(N0*N1,N0*N1);
+
+        this->R=arma::sp_dmat(N0*N1,N0*N1);
+
+        this->R_T=arma::sp_dmat(N0*N1,N0*N1);
+
+        this->Gamma=arma::sp_dmat(N0*N1,N0*N1);
+        this->Gamma_T=arma::sp_dmat(N0*N1,N0*N1);
+
+        this->Lambda=arma::sp_dmat(N0*N1,N0*N1);
+        this->Lambda_T=arma::sp_dmat(N0*N1,N0*N1);
+
+        this->unif_in_0_N0N1 = std::uniform_int_distribution<int>(0, N0 * N1-1);
 
 
+        this->dipole_upper_bound = 1.0 / 4.0 * 1.0 / std::sqrt(3.0) * a * q;
+        this->dipole_lower_bound = -dipole_upper_bound;
 
+        std::cout << "dipole_upper_bound=" << dipole_upper_bound << std::endl;
+        std::cout << "dipole_lower_bound=" << dipole_lower_bound << std::endl;
 
+        this->a_squared = std::pow(a, 2.0);
+        this->J_over_a_squared = J / a_squared;
+        std::cout << "J_over_a_squared=" << J_over_a_squared << std::endl;
 
 
     }//end constructor
+public:
+    void init_and_run();
 
+    void execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
+                              arma::dvec& Py_arma_vec_curr,
+                              arma::dvec& Qx_arma_vec_curr,
+                              arma::dvec& Qy_arma_vec_curr,
+                              double& UCurr,
+                              arma::dvec& Px_arma_vec_next,
+                              arma::dvec& Py_arma_vec_next,
+                              arma::dvec& Qx_arma_vec_next,
+                              arma::dvec& Qy_arma_vec_next);
+
+    /// 
+    /// @param flattened_ind 
+    /// @param Px_arma_vec_curr 
+    /// @param Px_arma_vec_next 
+    /// @param Py_arma_vec_curr 
+    /// @param Qx_arma_vec_curr 
+    /// @param Qy_arma_vec_curr 
+    /// @param UCurr 
+    /// @param UNext 
+    void HPx_update_colForm(const int& flattened_ind, const arma::dvec& Px_arma_vec_curr,
+                    const arma::dvec& Px_arma_vec_next,
+                    const arma::dvec& Py_arma_vec_curr,
+                    const arma::dvec& Qx_arma_vec_curr,
+                    const arma::dvec& Qy_arma_vec_curr,
+                    double& UCurr, double& UNext);
+    /// 
+    /// @param flattened_ind
+    /// @param Py_arma_vec_curr 
+    /// @param Py_arma_vec_next 
+    /// @param Px_arma_vec_curr 
+    /// @param Qx_arma_vec_curr 
+    /// @param Qy_arma_vec_curr 
+    /// @param UCurr 
+    /// @param UNext 
+    void HPy_update_colForm(const int& flattened_ind,
+                    const arma::dvec& Py_arma_vec_curr, const arma::dvec& Py_arma_vec_next,
+                    const arma::dvec& Px_arma_vec_curr, const arma::dvec& Qx_arma_vec_curr,
+                    const arma::dvec& Qy_arma_vec_curr,
+                    double& UCurr, double& UNext);
+
+    void HQx_update_colForm(const int& flattened_ind,
+                    const arma::dvec& Qx_arma_vec_curr, const arma::dvec& Qx_arma_vec_next,
+                    const arma::dvec& Px_arma_vec_curr,
+                    const arma::dvec& Py_arma_vec_curr,
+                    const arma::dvec& Qy_arma_vec_curr,
+                    double& UCurr, double& UNext);
+
+
+    void HQy_update_colForm(const int& flattened_ind,
+                    const arma::dvec& Qy_arma_vec_curr, const arma::dvec& Qy_arma_vec_next,
+                    const arma::dvec& Px_arma_vec_curr,
+                    const arma::dvec& Py_arma_vec_curr,
+                    const arma::dvec& Qx_arma_vec_curr,
+                    double& UCurr, double& UNext);
+    
+    int mod_direction0(const int&m0);
+    int mod_direction1(const int&m1);
+    void init_mats();
+    void init_Px_Py_Qx_Qy();
+    ///
+    /// @param n0
+    /// @param n1
+    /// @return flatenned index
+    int double_ind_to_flat_ind(const int& n0, const int& n1);
+
+    void load_pickle_data(const std::string& filename, std::shared_ptr<double[]>& data_ptr, std::size_t size);
+    void save_array_to_pickle(const std::shared_ptr<double[]>& ptr, int size, const std::string& filename);
+    void proposal_uni(const arma::dvec& arma_vec_curr, arma::dvec& arma_vec_next,
+                         const int& flattened_ind);
+
+    ///
+    /// @param x
+    /// @param leftEnd
+    /// @param rightEnd
+    /// @param eps
+    /// @return return a value within distance eps from x, on the open interval (leftEnd, rightEnd)
+    double generate_uni_open_interval(const double& x, const double& leftEnd, const double& rightEnd,
+                                      const double& eps);
+
+    
+    ///
+    /// @param x proposed value
+    /// @param y current value
+    /// @param a left end of interval
+    /// @param b right end of interval
+    /// @param epsilon half length
+    /// @return proposal probability S(x|y)
+    double S_uni(const double& x, const double& y, const double& a, const double& b, const double& epsilon);
+
+    /// 
+    /// @param flattened_ind 
+    /// @param Px_arma_vec 
+    /// @param Py_arma_vec 
+    /// @return 
+    double H1(const int& flattened_ind, const arma::dvec& Px_arma_vec, const arma::dvec& Py_arma_vec);
+
+    /// 
+    /// @param flattened_ind 
+    /// @param Qx_arma_vec 
+    /// @param Qy_arma_vec 
+    /// @return 
+    double H2(const int& flattened_ind, const arma::dvec& Qx_arma_vec, const arma::dvec& Qy_arma_vec);
+
+    double acceptanceRatio_uni(const arma::dvec& arma_vec_curr,
+                               const arma::dvec& arma_vec_next, const int& flattened_ind,
+                               const double& UCurr, const double& UNext);
 public:
     double T; // temperature
     double beta;
@@ -398,7 +532,7 @@ public:
     int N0, N1;
     int Nx, Ny;
 
-    arma::dmat A, B, C, G, R, Gamma, Theta, Lambda;
+    arma::sp_dmat 	 A_T, B_T, C_T, G_T, R,R_T, Gamma,Gamma_T, Theta,Theta_T, Lambda,Lambda_T;
 
     std::uniform_int_distribution<int> unif_in_0_N0N1;
 

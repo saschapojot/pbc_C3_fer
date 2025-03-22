@@ -964,6 +964,7 @@ void mc_computation::execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
     {
         //end updating Px
         int flattened_ind = unif_in_0_N0N1(e2);
+        // std::cout<<"flattened_ind="<<flattened_ind<<std::endl;
         this->proposal_uni(Px_arma_vec_curr, Px_arma_vec_next, flattened_ind);
 
         this->HPx_update_colForm(flattened_ind, Px_arma_vec_curr, Px_arma_vec_next,
@@ -1042,11 +1043,97 @@ void mc_computation::execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
 
 }
 
+void mc_computation::execute_mc(const std::shared_ptr<double[]>& Px_vec,
+                                const std::shared_ptr<double[]>& Py_vec,
+                                const std::shared_ptr<double[]>& Qx_vec,
+                                const std::shared_ptr<double[]>& Qy_vec,
+                                const int& flushNum)
+{
+    arma::dvec Px_arma_vec_curr(Px_vec.get(), N0 * N1);
+    arma::dvec Px_arma_vec_next(N0 * N1, arma::fill::zeros);
+
+    arma::dvec Py_arma_vec_curr(Py_vec.get(), N0 * N1);
+    arma::dvec Py_arma_vec_next(N0 * N1, arma::fill::zeros);
+
+    arma::dvec Qx_arma_vec_curr(Qx_vec.get(), N0 * N1);
+    arma::dvec Qx_arma_vec_next(N0 * N1, arma::fill::zeros);
+
+    arma::dvec Qy_arma_vec_curr(Qy_vec.get(), N0 * N1);
+    arma::dvec Qy_arma_vec_next(N0 * N1, arma::fill::zeros);
+
+    double UCurr=0;
+    int flushThisFileStart=this->flushLastFile+1;
+
+    for (int fls = 0; fls < flushNum; fls++)
+    {
+        const auto tMCStart{std::chrono::steady_clock::now()};
+        for (int swp = 0; swp < sweepToWrite*sweep_multiple; swp++)
+        {
+            this->execute_mc_one_sweep(Px_arma_vec_curr,
+                Py_arma_vec_curr,
+                Qx_arma_vec_curr,
+                Qy_arma_vec_curr,
+                UCurr,
+                Px_arma_vec_next,
+                Py_arma_vec_next,
+                Qx_arma_vec_next,
+                Qy_arma_vec_next);
+
+            if(swp%sweep_multiple==0)
+            {
+                int swp_out=swp/sweep_multiple;
+                this->U_data_all_ptr[swp_out]=UCurr;
+                std::memcpy(Px_all_ptr.get()+swp_out*N0*N1,Px_arma_vec_curr.memptr(),N0*N1*sizeof(double));
+                std::memcpy(Py_all_ptr.get()+swp_out*N0*N1,Py_arma_vec_curr.memptr(),N0*N1*sizeof(double));
+                std::memcpy(Qx_all_ptr.get()+swp_out*N0*N1,Qx_arma_vec_curr.memptr(),N0*N1*sizeof(double));
+                std::memcpy(Qy_all_ptr.get()+swp_out*N0*N1,Qy_arma_vec_curr.memptr(),N0*N1*sizeof(double));
+            }//end save to array
+
+        }//end sweep for
+
+        int flushEnd=flushThisFileStart+fls;
+        std::string fileNameMiddle =  "flushEnd" + std::to_string(flushEnd);
+
+        std::string out_U_PickleFileName = out_U_path+"/" + fileNameMiddle + ".U.pkl";
+
+        std::string out_Px_PickleFileName=out_Px_path+"/"+fileNameMiddle+".Px.pkl";
+
+        std::string out_Py_PickleFileName=out_Py_path+"/"+fileNameMiddle+".Py.pkl";
+
+        std::string out_Qx_PickleFileName=out_Qx_path+"/"+fileNameMiddle+".Qx.pkl";
+
+        std::string out_Qy_PickleFileName=out_Qy_path+"/"+fileNameMiddle+".Qy.pkl";
+        //save U
+        this->save_array_to_pickle(U_data_all_ptr,sweepToWrite,out_U_PickleFileName);
+
+        //save Px
+        this->save_array_to_pickle(Px_all_ptr,sweepToWrite*N0*N1,out_Px_PickleFileName);
+        //save Py
+        this->save_array_to_pickle(Py_all_ptr,sweepToWrite*N0*N1,out_Py_PickleFileName);
+        //save Qx
+        this->save_array_to_pickle(Qx_all_ptr,sweepToWrite*N0*N1,out_Qx_PickleFileName);
+
+        //save Qy
+        this->save_array_to_pickle(Qy_all_ptr,sweepToWrite*N0*N1,out_Qy_PickleFileName);
+
+        const auto tMCEnd{std::chrono::steady_clock::now()};
+        const std::chrono::duration<double> elapsed_secondsAll{tMCEnd - tMCStart};
+        std::cout << "flush " + std::to_string(flushEnd)  + ": "
+                  << elapsed_secondsAll.count() / 3600.0 << " h" << std::endl;
+    }//end flush for loop
+
+    std::cout << "mc executed for " << flushNum << " flushes." << std::endl;
+
+
+}
+
 void mc_computation::init_and_run()
 {
     this->init_mats();
 
     this->init_Px_Py_Qx_Qy();
+    this->execute_mc(Px_init,Py_init,Qx_init,Qy_init,newFlushNum);
+
     // int flattened_ind=47;
     // arma::dvec Px_arma_vec_curr = arma::randu<arma::dvec>(N0*N1);
     // arma::dvec Px_arma_vec_next = arma::randu<arma::dvec>(N0*N1);

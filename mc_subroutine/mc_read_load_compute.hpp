@@ -378,6 +378,12 @@ public:
 public:
     void init_and_run();
 
+
+    void execute_mc(const std::shared_ptr<double[]>& Px_vec,
+                    const std::shared_ptr<double[]>& Py_vec,
+                    const std::shared_ptr<double[]>& Qx_vec,
+                    const std::shared_ptr<double[]>& Qy_vec,
+                    const int& flushNum);
     void execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
                               arma::dvec& Py_arma_vec_curr,
                               arma::dvec& Qx_arma_vec_curr,

@@ -80,7 +80,7 @@ finally:
 #############################################
 #check statistics of U
 
-stats_process=subprocess.Popen(["python3","-u", "check_after_one_run.py", f"./dataAll/N{N}/T{TStr}/run_T{TStr}.mc.conf",str(startingFileIndSuggest)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+stats_process=subprocess.Popen(["python3","-u", "check_after_one_run_U.py", f"./dataAll/N{N}/T{TStr}/run_T{TStr}.mc.conf",str(startingFileIndSuggest)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 while True:
     output = stats_process.stdout.readline()
     if output == '' and stats_process.poll() is not None:

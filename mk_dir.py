@@ -30,7 +30,9 @@ Nx-=2
 Ny-=2
 # number=int((10-0.1)/0.01)
 # TVals=[0.1+0.01*n for n in range(0,number+1)]
-TVals=[2+0.5*n for n in range(0,11)]
+last_temp=30
+T_num=int((last_temp-8)/0.5)
+TVals=[8+0.5*n for n in range(0,T_num+1)]
 default_flush_num=30
 #lattice const
 a=2
@@ -141,7 +143,7 @@ def contents_to_conf(k):
         "\n",
         "#For the observable name, only digits 0-9, letters a-zA-Z, underscore _ are allowed\n",
         "\n",
-        "observable_name=U\n",
+        "observable_name=U_dipole\n",
         "\n",
        f"effective_data_num_required={effective_data_num_required}\n",
         "\n",

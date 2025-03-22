@@ -38,9 +38,11 @@ a=2
 q=2
 dataRoot="./dataAll/"
 dataOutDir=dataRoot
-
+effective_data_num_required=5000
 #alpha1: 1/(1!2!)
 const_multiple=1000
+sweep_to_write=500
+sweep_multiple=700
 alpha1_coef=1/(factorial(1)*factorial(2))
 alpha1=alpha1_coef*const_multiple
 #alpha2: 1/(1!2!)
@@ -139,12 +141,12 @@ def contents_to_conf(k):
         "\n",
         "#For the observable name, only digits 0-9, letters a-zA-Z, underscore _ are allowed\n",
         "\n",
-        "observable_name=U_dipole\n",
+        "observable_name=U\n",
         "\n",
-        "effective_data_num_required=100000\n",
+       f"effective_data_num_required={effective_data_num_required}\n",
         "\n",
         "#this is the data number in each pkl file, i.e., in each flush\n"
-        "sweep_to_write=500\n",
+        f"sweep_to_write={sweep_to_write}\n",
         "\n",
         "#within each flush,  sweep_to_write*sweep_multiple mc computations are executed\n",
         "\n",
@@ -154,7 +156,7 @@ def contents_to_conf(k):
         "\n",
         "#the configurations of the system are saved to file if the sweep number is a multiple of sweep_multiple\n",
         "\n",
-        "sweep_multiple=700\n",
+        f"sweep_multiple={sweep_multiple}\n",
         ]
     outDir=dataOutDir+f"/N{NStr}/"+"/T"+TStrAll[k]+"/"
     Path(outDir).mkdir(exist_ok=True,parents=True)

@@ -7,7 +7,7 @@ import numpy as np
 
 #This script creates directories and conf files for mc
 
-def format_using_decimal(value, precision=4):
+def format_using_decimal(value, precision=15):
     # Set the precision higher to ensure correct conversion
     getcontext().prec = precision + 2
     # Convert the float to a Decimal with exact precision
@@ -81,7 +81,7 @@ alpha6_Str=format_using_decimal(alpha6)
 alpha7_Str=format_using_decimal(alpha7)
 
 J_Str=format_using_decimal(J)
-h=0.04
+h=0.05
 TDirsAll=[]
 TStrAll=[]
 
@@ -144,7 +144,7 @@ def contents_to_conf(k):
         "effective_data_num_required=100000\n",
         "\n",
         "#this is the data number in each pkl file, i.e., in each flush\n"
-        "sweep_to_write=5000\n",
+        "sweep_to_write=500\n",
         "\n",
         "#within each flush,  sweep_to_write*sweep_multiple mc computations are executed\n",
         "\n",
@@ -154,7 +154,7 @@ def contents_to_conf(k):
         "\n",
         "#the configurations of the system are saved to file if the sweep number is a multiple of sweep_multiple\n",
         "\n",
-        "sweep_multiple=1200\n",
+        "sweep_multiple=700\n",
         ]
     outDir=dataOutDir+f"/N{NStr}/"+"/T"+TStrAll[k]+"/"
     Path(outDir).mkdir(exist_ok=True,parents=True)

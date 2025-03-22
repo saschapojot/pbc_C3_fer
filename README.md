@@ -14,12 +14,12 @@ To manually perform each step of computations
 5. go to 1, until no more data points are needed
 
 #########################################
-To run 1 pass of mc with checking statistics
+To run 1 pass of mc with checking statistics of U
 1. cmake .
 2. make run_mc
-3. python exec_checking.py T N lastFileNum
+3. python exec_checking.py T N startingFileIndSuggest
 4. run 3 until equilibrium
-5. python exec_noChecking.py T N
+5. python exec_checking_U.py T N
 
 
 #############################

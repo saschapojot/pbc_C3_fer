@@ -17,6 +17,9 @@ int main(int argc, char *argv[])
 
 
 
+
+
+
 //test row/col speed
     // arma::arma_rng::set_seed(2145);
     // int length=100;

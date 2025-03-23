@@ -32,7 +32,7 @@ interval_upperValsAll=np.array(df["upper"])
 
 U_err_bar=UValsAll-interval_lowerValsAll
 print(f"np.mean(U_err_bar)={np.mean(U_err_bar)}")
-mask = (TVec > 0.2)
+mask = (TVec <5)
 TInds = np.where(mask)[0]
 TInds=TInds[::1]
 print(f"TInds={TInds}")
@@ -48,7 +48,7 @@ ax.errorbar(TToPlt,UValsAll[TInds],
             ecolor='r', capsize=0.1,label='mc',
             markersize=1)
 # ax.scatter(TToPlt,UValsAll[TInds],marker="o",color="black",label='mc',s=1)
-ax.set_xscale("log")
+# ax.set_xscale("log")
 ax.set_xlabel('$T$')
 ax.set_ylabel("U")
 ax.set_title("U per unit cell, unit cell number="+str(N**2))

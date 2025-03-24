@@ -21,8 +21,16 @@ To run 1 pass of mc with checking statistics of U
 4. run 3 until equilibrium
 5. python exec_noChecking.py T N
 
+After checking U, one may check statistics for dipole.
+1. 
+To check dipole for 1 temperature:
+python check_after_one_run_dipole.py ./path/to/mc.conf  startingFileIndSuggest
+to check all dipoles seqentially:
+python loop_check_dipoles_all_T.py N startingFileIndSuggest
+
 
 #############################
 after mc completes,
 1. cd data2csv/
-2. python pkl_U_dipole_data2csv.py N
+2. python pkl_U_data2csv.py N
+3. python pkl_dipole_data2csv.py N

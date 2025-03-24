@@ -34,3 +34,13 @@ after mc completes,
 1. cd data2csv/
 2. python pkl_U_data2csv.py N
 3. python pkl_dipole_data2csv.py N
+
+#############################
+#plots
+for plotting physical quantities, cd ./plt/
+1. python xxx_data_csv_2_plt.py N
+2. python load_csv_plt_xxx.py N
+
+for plotting lattices and dipoles cd ./pltLattice/
+1. python batch_lattice_dipole.py N
+2. python batch_plt_dipoles_all_T.py N

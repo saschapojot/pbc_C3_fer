@@ -44,3 +44,17 @@ for plotting physical quantities, cd ./plt/
 for plotting lattices and dipoles cd ./pltLattice/
 1. python batch_lattice_dipole.py N
 2. python batch_plt_dipoles_all_T.py N
+
+
+#############################
+#make movies
+cd ./mk_movie
+
+
+###############################
+# computing in branches:
+This part is after the equilibrium of the main computation path
+for the j-th branch, j=0,1,2,...,M-1
+
+1. python execute_branch_computation/init_branch.py N T obs_name branch_path_ind total_branch_num
+2. python branch_exec_noChecking_dipole.py N T branch_path_ind total_branch_num

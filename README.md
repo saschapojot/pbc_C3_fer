@@ -57,4 +57,5 @@ This part is after the equilibrium of the main computation path
 for the j-th branch, j=0,1,2,...,M-1
 
 1. python execute_branch_computation/init_branch.py N T obs_name branch_path_ind total_branch_num
-2. python branch_exec_noChecking_dipole.py N T branch_path_ind total_branch_num
+2. python branch_exec_noChecking_dipole.py N T obs_name branch_path_ind total_branch_num
+3. after branch computations finish, cd branch_data2csv, python main_and_branch_pkl_dipole_data2csv.py N T

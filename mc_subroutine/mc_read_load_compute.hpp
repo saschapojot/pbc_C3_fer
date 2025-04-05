@@ -342,23 +342,23 @@ public:
         {
             fs::create_directories(out_Qy_path);
         }
-        this->A_T=arma::sp_dmat(N0*N1,N0*N1);
+        // this->A_T=arma::sp_dmat(N0*N1,N0*N1);
 
-        this->B_T=arma::sp_dmat(N0*N1,N0*N1);
+        // this->B_T=arma::sp_dmat(N0*N1,N0*N1);
 
-        this->C_T=arma::sp_dmat(N0*N1,N0*N1);
+        // this->C_T=arma::sp_dmat(N0*N1,N0*N1);
 
-        this->G_T=arma::sp_dmat(N0*N1,N0*N1);
+        // this->G_T=arma::sp_dmat(N0*N1,N0*N1);
 
-        this->R=arma::sp_dmat(N0*N1,N0*N1);
+        // this->R=arma::sp_dmat(N0*N1,N0*N1);
 
-        this->R_T=arma::sp_dmat(N0*N1,N0*N1);
+        // this->R_T=arma::sp_dmat(N0*N1,N0*N1);
 
-        this->Gamma=arma::sp_dmat(N0*N1,N0*N1);
-        this->Gamma_T=arma::sp_dmat(N0*N1,N0*N1);
+        // this->Gamma=arma::sp_dmat(N0*N1,N0*N1);
+        // this->Gamma_T=arma::sp_dmat(N0*N1,N0*N1);
 
-        this->Lambda=arma::sp_dmat(N0*N1,N0*N1);
-        this->Lambda_T=arma::sp_dmat(N0*N1,N0*N1);
+        // this->Lambda=arma::sp_dmat(N0*N1,N0*N1);
+        // this->Lambda_T=arma::sp_dmat(N0*N1,N0*N1);
 
         this->unif_in_0_N0N1 = std::uniform_int_distribution<int>(0, N0 * N1-1);
 
@@ -388,11 +388,51 @@ public:
                               arma::dvec& Py_arma_vec_curr,
                               arma::dvec& Qx_arma_vec_curr,
                               arma::dvec& Qy_arma_vec_curr,
-                              double& UCurr,
+                              double& U_base_value,
                               arma::dvec& Px_arma_vec_next,
                               arma::dvec& Py_arma_vec_next,
                               arma::dvec& Qx_arma_vec_next,
                               arma::dvec& Qy_arma_vec_next);
+
+    ///
+    /// @param Px_arma_vec
+    /// @param Py_arma_vec
+    /// @param Qx_arma_vec
+    /// @param Qy_arma_vec
+    /// @return total energy
+    double H_total(const arma::dvec& Px_arma_vec,const arma::dvec& Py_arma_vec,
+                   const arma::dvec& Qx_arma_vec,const arma::dvec& Qy_arma_vec);
+    /// 
+    /// @param Px_arma_vec
+    /// @param Py_arma_vec 
+    /// @return total self energy H1
+    double sum_H1(const arma::dvec& Px_arma_vec, const arma::dvec& Py_arma_vec);
+
+    ///
+    /// @param Qx_arma_vec
+    /// @param Qy_arma_vec
+    /// @return total self energy H2
+    double sum_H2(const arma::dvec& Qx_arma_vec, const arma::dvec& Qy_arma_vec);
+
+    ///
+    /// @param Px_arma_vec
+    /// @param Py_arma_vec
+    /// @return 1/2 * total H3
+    double half_sum_H3(const arma::dvec& Px_arma_vec, const arma::dvec& Py_arma_vec);
+
+    ///
+    /// @param Px_arma_vec
+    /// @param Py_arma_vec
+    /// @param Qx_arma_vec
+    /// @param Qy_arma_vec
+    /// @return total H4
+    double sum_H4(const arma::dvec& Px_arma_vec,const arma::dvec& Py_arma_vec,const arma::dvec& Qx_arma_vec,const arma::dvec& Qy_arma_vec);
+
+    ///
+    /// @param Qx_arma_vec
+    /// @param Qy_arma_vec
+    /// @return 1/2* total H5
+    double half_sum_H5(const arma::dvec& Qx_arma_vec,const arma::dvec& Qy_arma_vec);
 
     /// 
     /// @param flattened_ind 
@@ -538,7 +578,7 @@ public:
     int N0, N1;
     int Nx, Ny;
 
-    arma::sp_dmat 	 A_T, B_T, C_T, G_T, R,R_T, Gamma,Gamma_T, Theta,Theta_T, Lambda,Lambda_T;
+    arma::sp_dmat 	 A,A_T,B, B_T,C, C_T,G, G_T, R,R_T, Gamma,Gamma_T, Theta,Theta_T, Lambda,Lambda_T;
 
     std::uniform_int_distribution<int> unif_in_0_N0N1;
 

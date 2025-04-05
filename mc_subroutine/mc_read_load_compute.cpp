@@ -205,7 +205,7 @@ void mc_computation::init_mats()
 {
     ////////////////////////////////////////////////////////////////////////
     //init A_T
-    arma::sp_dmat A(N0*N1,N0*N1);
+   this->A=arma::sp_dmat (N0*N1,N0*N1);
     for (int n0=0;n0<N0;n0++)
     {
         for (int n1=0;n1<N1;n1++)
@@ -230,7 +230,7 @@ void mc_computation::init_mats()
             }//end m0
         }//end n1
     }//end n0
-
+    // A.print("A:");
     this->A_T=A.t();
     // save and check
     // arma::dmat A_dense(A_T);
@@ -248,7 +248,7 @@ void mc_computation::init_mats()
     ///
     ///////////////////////////////////////////////////////////////////////////
     //init B_T
-    arma::sp_dmat B(N0*N1,N0*N1);
+    this-> B=arma::sp_dmat (N0*N1,N0*N1);
     for (int n0=0;n0<N0;n0++)
     {
         for (int n1=0;n1<N1;n1++)
@@ -277,7 +277,7 @@ void mc_computation::init_mats()
             }//end m0
         }//end n1
     }//end n0
-
+// B.print("B:");
     this->B_T=B.t();
     //save and check
     // arma::dmat B_dense(B_T);
@@ -293,7 +293,7 @@ void mc_computation::init_mats()
     ///
     //////////////////////////////////////////////////////////////////////////////
     /// init C_T
-    arma::sp_dmat C(N0*N1,N0*N1);
+    this->C=arma::sp_dmat (N0*N1,N0*N1);
 
     ///end init C_T
     for (int n0=0;n0<N0;n0++)
@@ -325,6 +325,7 @@ void mc_computation::init_mats()
             }//end m0
         }//end n1
     }//end n0
+    // C.print("C:");
     this->C_T=C.t();
     //save and check
     // arma::dmat C_dense(C_T);
@@ -338,7 +339,7 @@ void mc_computation::init_mats()
     //end init C_T
     //////////////////////////////////////////////////////////////////////////////
     /// init G_T
-    arma::sp_dmat G(N0*N1,N0*N1);
+    this-> G=arma::sp_dmat (N0*N1,N0*N1);
     for (int n0=0;n0<N0;n0++)
     {
         for (int n1=0;n1<N1;n1++)
@@ -368,6 +369,8 @@ void mc_computation::init_mats()
         }//end n1
     }//end n0
     this->G_T=G.t();
+
+    // G.print("G:");
     // arma::dmat G_dense(G_T);
     // double* raw_ptr = G_dense.memptr();
     // std::shared_ptr<double[]> sptr(raw_ptr, [](double* p) {
@@ -448,6 +451,7 @@ void mc_computation::init_mats()
         }//end n1
     }//end n0
     this->Gamma_T=Gamma.t();
+    // Gamma_T.print("Gamma_T:");
     // arma::dmat Gamma_dense(Gamma);
     // double* raw_ptr = Gamma_dense.memptr();
     // std::shared_ptr<double[]> sptr(raw_ptr, [](double* p) {
@@ -951,14 +955,15 @@ void mc_computation::execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
                               arma::dvec& Py_arma_vec_curr,
                               arma::dvec& Qx_arma_vec_curr,
                               arma::dvec& Qy_arma_vec_curr,
-                              double& UCurr,
+                              double& U_base_value,
                               arma::dvec& Px_arma_vec_next,
                               arma::dvec& Py_arma_vec_next,
                               arma::dvec& Qx_arma_vec_next,
                               arma::dvec& Qy_arma_vec_next)
 {
-
+    double UCurr=0;
     double UNext = 0;
+    U_base_value=this->H_total(Px_arma_vec_curr,Py_arma_vec_curr,Qx_arma_vec_curr,Qy_arma_vec_curr);
     //update Px
     for (int i = 0; i < N0 * N1; i++)
     {
@@ -979,8 +984,10 @@ void mc_computation::execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
         if (u <= r)
         {
             Px_arma_vec_curr = Px_arma_vec_next;
-            UCurr = UNext;
+            // UCurr = UNext;
+            U_base_value+=UNext-UCurr;
         } //end of accept-reject
+
     }//end updating Px
 
     //update Py
@@ -995,7 +1002,8 @@ void mc_computation::execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
         if (u <= r)
         {
             Py_arma_vec_curr = Py_arma_vec_next;
-            UCurr = UNext;
+            // UCurr = UNext;
+            U_base_value+=UNext-UCurr;
         } //end of accept-reject
     }//end updating Py
 
@@ -1013,7 +1021,8 @@ void mc_computation::execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
         if (u <= r)
         {
             Qx_arma_vec_curr = Qx_arma_vec_next;
-            UCurr = UNext;
+            // UCurr = UNext;
+            U_base_value+=UNext-UCurr;
         } //end of accept-reject
     }//end updating Qx
 
@@ -1035,7 +1044,8 @@ void mc_computation::execute_mc_one_sweep(arma::dvec& Px_arma_vec_curr,
         if (u <= r)
         {
             Qy_arma_vec_curr=Qy_arma_vec_next;
-            UCurr = UNext;
+            // UCurr = UNext;
+            U_base_value+=UNext-UCurr;
         }//end of accept-reject
 
 
@@ -1061,7 +1071,9 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& Px_vec,
     arma::dvec Qy_arma_vec_curr(Qy_vec.get(), N0 * N1);
     arma::dvec Qy_arma_vec_next(N0 * N1, arma::fill::zeros);
 
-    double UCurr=0;
+    // double UCurr=0;
+    double U_base_value=-12345;
+
     int flushThisFileStart=this->flushLastFile+1;
 
     for (int fls = 0; fls < flushNum; fls++)
@@ -1073,7 +1085,7 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& Px_vec,
                 Py_arma_vec_curr,
                 Qx_arma_vec_curr,
                 Qy_arma_vec_curr,
-                UCurr,
+                U_base_value,
                 Px_arma_vec_next,
                 Py_arma_vec_next,
                 Qx_arma_vec_next,
@@ -1082,7 +1094,7 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& Px_vec,
             if(swp%sweep_multiple==0)
             {
                 int swp_out=swp/sweep_multiple;
-                this->U_data_all_ptr[swp_out]=UCurr;
+                this->U_data_all_ptr[swp_out]=U_base_value;
                 std::memcpy(Px_all_ptr.get()+swp_out*N0*N1,Px_arma_vec_curr.memptr(),N0*N1*sizeof(double));
                 std::memcpy(Py_all_ptr.get()+swp_out*N0*N1,Py_arma_vec_curr.memptr(),N0*N1*sizeof(double));
                 std::memcpy(Qx_all_ptr.get()+swp_out*N0*N1,Qx_arma_vec_curr.memptr(),N0*N1*sizeof(double));
@@ -1132,7 +1144,7 @@ void mc_computation::init_and_run()
     this->init_mats();
 
     this->init_Px_Py_Qx_Qy();
-    this->execute_mc(Px_init,Py_init,Qx_init,Qy_init,newFlushNum);
+     this->execute_mc(Px_init,Py_init,Qx_init,Qy_init,newFlushNum);
 
     // int flattened_ind=47;
     // arma::dvec Px_arma_vec_curr = arma::randu<arma::dvec>(N0*N1);
@@ -1144,5 +1156,167 @@ void mc_computation::init_and_run()
     // this->HQy_update_colForm(flattened_ind,Px_arma_vec_curr,Px_arma_vec_next,
     //     Py_arma_vec_curr,Qx_arma_vec_curr,
     //     Qy_arma_vec_curr,UCurr,UNext);
+
+}
+
+
+
+///
+/// @param Px_arma_vec
+/// @param Py_arma_vec
+/// @return total self energy H1
+double mc_computation::sum_H1(const arma::dvec& Px_arma_vec, const arma::dvec& Py_arma_vec)
+{
+
+    double sumVal=0;
+    for (int flat_ind=0;flat_ind<N0*N1;flat_ind++)
+    {
+        sumVal+=this->H1(flat_ind,Px_arma_vec,Py_arma_vec);
+    }//end for
+
+    return sumVal;
+
+}
+
+
+///
+/// @param Qx_arma_vec
+/// @param Qy_arma_vec
+/// @return total self energy H2
+double mc_computation::sum_H2(const arma::dvec& Qx_arma_vec, const arma::dvec& Qy_arma_vec)
+{
+
+    double sumVal=0;
+    for (int flat_ind=0;flat_ind<N0*N1;flat_ind++)
+    {
+        sumVal+=this->H2(flat_ind,Qx_arma_vec,Qy_arma_vec);
+    }//end for
+    return sumVal;
+}
+
+
+
+///
+/// @param Px_arma_vec
+/// @param Py_arma_vec
+/// @return 1/2 * total H3
+double mc_computation::half_sum_H3(const arma::dvec& Px_arma_vec, const arma::dvec& Py_arma_vec)
+{
+double a_squared=std::pow(a,2.0);
+
+double val0=J/(2.0*a_squared)
+    *arma::as_scalar(Px_arma_vec.t()*this->A*Px_arma_vec);
+
+
+    double val1=J/(2.0*a_squared)
+    *arma::as_scalar(Py_arma_vec.t()*this->A*Py_arma_vec);
+
+
+    double val2=-J/a_squared*arma::as_scalar(Px_arma_vec.t()*this->B*Px_arma_vec);
+
+    double val3=-std::sqrt(3.0)*J/(2.0*a_squared)*arma::as_scalar(Px_arma_vec.t()*this->C*Py_arma_vec);
+
+    double val4=-std::sqrt(3.0)*J/(2.0*a_squared)*arma::as_scalar(Py_arma_vec.t()*this->C*Px_arma_vec);
+
+    double val5=-3.0/4.0*J/a_squared*arma::as_scalar(Py_arma_vec.t()*this->G*Py_arma_vec);
+
+
+    return val0+val1+val2+val3+val4+val5;
+
+
+}
+
+
+///
+/// @param Px_arma_vec
+/// @param Py_arma_vec
+/// @param Qx_arma_vec
+/// @param Qy_arma_vec
+/// @return total H4
+double mc_computation::sum_H4(const arma::dvec& Px_arma_vec,const arma::dvec& Py_arma_vec,
+    const arma::dvec& Qx_arma_vec,const arma::dvec& Qy_arma_vec)
+{
+
+    double a_squared=std::pow(a,2.0);
+
+    double val0=J/a_squared
+                *arma::as_scalar(Px_arma_vec.t()*this->R*Qx_arma_vec);
+
+    double val1=J/a_squared
+                *arma::as_scalar(Py_arma_vec.t()*this->R*Qy_arma_vec);
+
+    double val2=-2.0*J/a_squared
+                *arma::as_scalar(Px_arma_vec.t()*this->Gamma*Qx_arma_vec);
+
+    double val3=-2.0*J/a_squared
+                *arma::as_scalar(Px_arma_vec.t()*this->Theta*Qy_arma_vec);
+
+    double val4=-2.0*J/a_squared
+                *arma::as_scalar(Py_arma_vec.t()*this->Theta*Qx_arma_vec);
+
+    double val5=-2.0*J/a_squared
+                *arma::as_scalar(Py_arma_vec.t()*this->Lambda*Qy_arma_vec);
+
+
+    return val0+val1+val2+val3+val4+val5;
+
+}
+
+
+///
+/// @param Qx_arma_vec
+/// @param Qy_arma_vec
+/// @return 1/2* total H5
+double mc_computation::half_sum_H5(const arma::dvec& Qx_arma_vec,const arma::dvec& Qy_arma_vec)
+{
+    double a_squared=std::pow(a,2.0);
+
+    double val0=J/(2.0*a_squared)
+                *arma::as_scalar(Qx_arma_vec.t()*this->A*Qx_arma_vec);
+
+    double val1=J/(2.0*a_squared)
+                *arma::as_scalar(Qy_arma_vec.t()*this->A*Qy_arma_vec);
+
+    double val2=-J/a_squared
+                *arma::as_scalar(Qx_arma_vec.t()*this->B*Qx_arma_vec);
+
+    double val3=-std::sqrt(3.0)/(2.0*a_squared)
+                *arma::as_scalar(Qx_arma_vec.t()*this->C*Qy_arma_vec);
+
+    double val4=-std::sqrt(3.0)/(2.0*a_squared)
+                *arma::as_scalar(Qy_arma_vec.t()*this->C*Qx_arma_vec);
+
+    double val5=-3.0/4.0*J/a_squared
+                *arma::as_scalar(Qy_arma_vec.t()*this->G*Qy_arma_vec);
+
+
+    return val0+val1+val2+val3+val4+val5;
+
+
+}
+
+///
+/// @param Px_arma_vec
+/// @param Py_arma_vec
+/// @param Qx_arma_vec
+/// @param Qy_arma_vec
+/// @return total energy
+double mc_computation::H_total(const arma::dvec& Px_arma_vec,const arma::dvec& Py_arma_vec,
+               const arma::dvec& Qx_arma_vec,const arma::dvec& Qy_arma_vec)
+{
+
+    double sum_H1_val=this->sum_H1(Px_arma_vec,Py_arma_vec);
+
+    double sum_H2_val=this->sum_H2(Qx_arma_vec,Qy_arma_vec);
+
+    double half_sum_H3_val=this->half_sum_H3(Px_arma_vec,Py_arma_vec);
+
+    double sum_H4_val=this->sum_H4(Px_arma_vec,Py_arma_vec,
+                                    Qx_arma_vec,Qy_arma_vec);
+
+    double half_sum_H5_val=this->half_sum_H5(Qx_arma_vec,Qy_arma_vec);
+
+    return sum_H1_val+sum_H2_val+half_sum_H3_val+sum_H4_val+half_sum_H5_val;
+
 
 }
